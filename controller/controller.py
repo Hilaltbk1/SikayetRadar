@@ -1,7 +1,21 @@
 from fastapi import HTTPException
+from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import select, Session
 from database import engine
 from models import User, Post
+import logging
+
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
 
 
 def create_user(user: User):
@@ -11,12 +25,16 @@ def create_user(user: User):
     :param user: An instance of the User model containing the user's details.
     :return: The newly created user with updated information.
     """
-    with Session(engine) as session:
-        new_user = User(name=user.name, username=user.username, password=user.password)
-        session.add(new_user)
-        session.commit()
-        session.refresh(new_user)
-        return new_user
+    try:
+        with Session(engine) as session:
+            new_user = User(name=user.name, username=user.username, password=user.password)
+            session.add(new_user)
+            session.commit()
+            session.refresh(new_user)
+            return new_user
+    except SQLAlchemyError as e:
+        logging.error("Bir hata meydana geldi: %s", str(e), exc_info=True)
+        raise HTTPException(status_code=500, detail="User could not be created")
 
 
 def create_post(post: Post):
@@ -26,34 +44,46 @@ def create_post(post: Post):
     :param post: An instance of the Post model containing the post's details.
     :return: The newly created post with updated information.
     """
-    with Session(engine) as session:
-        new_post = Post(post=post.post, like_count=post.like_count, comment=post.comment)
-        session.add(new_post)
-        session.commit()
-        session.refresh(new_post)
-        return new_post
+    try:
+        with Session(engine) as session:
+            new_post = Post(post=post.post, like_count=post.like_count, comment=post.comment)
+            session.add(new_post)
+            session.commit()
+            session.refresh(new_post)
+            return new_post
+    except SQLAlchemyError as e:
+        logging.error("Bir hata meydana geldi: %s", str(e), exc_info=True)
+        raise HTTPException(status_code=500, detail="Posts could not be created")
 
 
-def get_all_users() :
+def get_all_users():
     """
     Retrieves a list of all users in the database.
 
     :return: A list of all users in the database.
     """
-    with Session(engine) as session:
-        users = session.exec(select(User)).all()
-        return users
+    try:
+        with Session(engine) as session:
+            users = session.exec(select(User)).all()
+            return users
+    except SQLAlchemyError as e:
+        logging.error("Bir hata meydana geldi: %s", str(e), exc_info=True)
+        raise HTTPException(status_code=500, detail="All users could not be retrieved")
 
 
-def get_all_posts() :
+def get_all_posts():
     """
     Retrieves a list of all posts in the database.
 
     :return: A list of all posts in the database.
     """
-    with Session(engine) as session:
-        posts = session.exec(select(Post)).all()
-        return posts
+    try:
+        with Session(engine) as session:
+            posts = session.exec(select(Post)).all()
+            return posts
+    except SQLAlchemyError as e:
+        logging.error("Bir hata meydana geldi: %s", str(e), exc_info=True)
+        raise HTTPException(status_code=500, detail="All posts could not be retrieved")
 
 
 def get_a_user(user_id: int):
@@ -63,14 +93,18 @@ def get_a_user(user_id: int):
     :param user_id: The ID of the user to retrieve.
     :return: A specific user from the database.
     """
-    with Session(engine) as session:
-        sql_ = select(User).where(User.id == user_id)
-        result = session.exec(sql_).first()
+    try:
+        with Session(engine) as session:
+            sql_ = select(User).where(User.id == user_id)
+            result = session.exec(sql_).first()
 
-        if result is None:
-            raise HTTPException(status_code=404, detail="User not found")
+            if result is None:
+                raise HTTPException(status_code=404, detail="User not found")
 
-        return result
+            return result
+    except SQLAlchemyError as e:
+        logging.error("Bir hata meydana geldi: %s", str(e), exc_info=True)
+        raise HTTPException(status_code=500, detail="User not found")
 
 
 def get_a_post(post_id: int):
@@ -80,14 +114,18 @@ def get_a_post(post_id: int):
     :param post_id: The ID of the post to retrieve.
     :return: A specific post from the database.
     """
-    with Session(engine) as session:
-        sql_ = select(Post).where(Post.id == post_id)
-        result = session.exec(sql_).first()
+    try:
+        with Session(engine) as session:
+            sql_ = select(Post).where(Post.id == post_id)
+            result = session.exec(sql_).first()
 
-        if result is None:
-            raise HTTPException(status_code=404, detail="Post not found")
+            if result is None:
+                raise HTTPException(status_code=404, detail="Post not found")
 
-        return result
+            return result
+    except SQLAlchemyError as e:
+        logging.error("Bir hata meydana geldi: %s", str(e), exc_info=True)
+        raise HTTPException(status_code=500, detail="Post not found")
 
 
 def update_post(post_id: int, post: Post):
@@ -98,19 +136,23 @@ def update_post(post_id: int, post: Post):
     :param post: An instance of the Post model containing the post's details.
     :return: The updated post from the database.
     """
-    with Session(engine) as session:
-        sql_ = select(Post).where(Post.id == post_id)
-        result = session.exec(sql_).first()
+    try:
+        with Session(engine) as session:
+            sql_ = select(Post).where(Post.id == post_id)
+            result = session.exec(sql_).first()
 
-        if result is None:
-            raise HTTPException(status_code=404, detail="Post not found")
+            if result is None:
+                raise HTTPException(status_code=404, detail="Post not found")
 
-        result.post = post.post
-        result.like_count = post.like_count
-        result.comment = post.comment
-        session.commit()
-        session.refresh(result)
-        return result
+            result.post = post.post
+            result.like_count = post.like_count
+            result.comment = post.comment
+            session.commit()
+            session.refresh(result)
+            return result
+    except SQLAlchemyError as e:
+        logging.error("Bir hata meydana geldi: %s", str(e), exc_info=True)
+        raise HTTPException(status_code=500, detail="Post do not update")
 
 
 def update_user(user_id: int, user: User):
@@ -121,19 +163,23 @@ def update_user(user_id: int, user: User):
     :param user: An instance of the User model containing the user's details.
     :return: The updated user from the database.
     """
-    with Session(engine) as session:
-        sql_ = select(User).where(User.id == user_id)
-        result = session.exec(sql_).first()
+    try:
+        with Session(engine) as session:
+            sql_ = select(User).where(User.id == user_id)
+            result = session.exec(sql_).first()
 
-        if result is None:
-            raise HTTPException(status_code=404, detail="User not found")
+            if result is None:
+                raise HTTPException(status_code=404, detail="User not found")
 
-        result.name = user.name
-        result.username = user.username
-        result.password = user.password
-        session.commit()
-        session.refresh(result)
-        return result
+            result.name = user.name
+            result.username = user.username
+            result.password = user.password
+            session.commit()
+            session.refresh(result)
+            return result
+    except SQLAlchemyError as e:
+        logging.error("Bir hata meydana geldi: %s", str(e), exc_info=True)
+        raise HTTPException(status_code=500, detail="User do not update")
 
 
 def delete_post(post_id: int):
@@ -143,16 +189,20 @@ def delete_post(post_id: int):
     :param post_id: The ID of the post to delete.
     :return: The deleted post from the database.
     """
-    with Session(engine) as session:
-        sql_ = select(Post).where(Post.id == post_id)
-        result = session.exec(sql_).one_or_none()
+    try:
+        with Session(engine) as session:
+            sql_ = select(Post).where(Post.id == post_id)
+            result = session.exec(sql_).one_or_none()
 
-        if result is None:
-            raise HTTPException(status_code=404, detail="Post not found")
+            if result is None:
+                raise HTTPException(status_code=404, detail="Post not found")
 
-        session.delete(result)
-        session.commit()
-        return result
+            session.delete(result)
+            session.commit()
+            return result
+    except SQLAlchemyError as e:
+        logging.error("Bir hata meydana geldi: %s", str(e), exc_info=True)
+        raise HTTPException(status_code=500, detail="Post do not delete")
 
 
 def delete_user(user_id: int):
@@ -162,13 +212,17 @@ def delete_user(user_id: int):
     :param user_id: The ID of the user to delete.
     :return: The deleted user from the database.
     """
-    with Session(engine) as session:
-        sql_ = select(User).where(User.id == user_id)
-        result = session.exec(sql_).one_or_none()
+    try:
+        with Session(engine) as session:
+            sql_ = select(User).where(User.id == user_id)
+            result = session.exec(sql_).one_or_none()
 
-        if result is None:
-            raise HTTPException(status_code=404, detail="User not found")
+            if result is None:
+                raise HTTPException(status_code=404, detail="User not found")
 
-        session.delete(result)
-        session.commit()
-        return result
+            session.delete(result)
+            session.commit()
+            return result
+    except SQLAlchemyError as e:
+        logging.error("Bir hata meydana geldi: %s", str(e), exc_info=True)
+        raise HTTPException(status_code=500, detail="User do not delete")
