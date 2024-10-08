@@ -1,2 +1,2 @@
-from .User import User
-from .Post import Post
+from models.User import User
+from models.Post import Post
