@@ -1,5 +1,5 @@
 from typing import Optional, List
-from sqlmodel import Field, SQLModel, Relationship, create_engine, MetaData
+from sqlmodel import Field, SQLModel, Relationship
 
 from models import User
 
