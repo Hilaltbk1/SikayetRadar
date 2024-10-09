@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "cls_token": "[CLS]",
   "mask_token": "[MASK]",
@@ -5,3 +6,12 @@
   "sep_token": "[SEP]",
   "unk_token": "[UNK]"
 }
+=======
+{
+  "cls_token": "[CLS]",
+  "mask_token": "[MASK]",
+  "pad_token": "[PAD]",
+  "sep_token": "[SEP]",
+  "unk_token": "[UNK]"
+}
+>>>>>>> bfb481a6e5f129a15d1dce92e830068d62b911b6
