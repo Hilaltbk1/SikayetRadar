@@ -1,5 +1,4 @@
 import os
-
 from fastapi import APIRouter
 import torch
 from transformers import BertForSequenceClassification, BertTokenizer
@@ -33,7 +32,25 @@ async def delete_user_endpoint(post_id: int):
     return await delete_post(post_id)
 
 
+
 model_save_path = r"D:\fastApiProject\bert_model"
+
+import os
+
+model_save_path = r"D:\fastApiProject\bert_model"
+print(f"Model save path: {model_save_path}")
+
+if os.path.exists(model_save_path):
+    try:
+        with open(model_save_path, 'r') as file:
+            print("Dosya erişilebilir ve okuma işlemi başarılı.")
+    except PermissionError:
+        print("Bu dosyaya okuma izniniz yok.")
+else:
+    print("Dosya mevcut değil.")
+
+
+
 
 tokenizer = BertTokenizer.from_pretrained(model_save_path)
 model = BertForSequenceClassification.from_pretrained(model_save_path)

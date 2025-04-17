@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from database import init_db, close_db
 from contextlib import asynccontextmanager
 from routers.users_router import router as user_router
-from routers.posts_router import router as post_router
+from routers.posts_router import router as post_router, model_save_path
 from typing import AsyncIterator
 
 @asynccontextmanager
@@ -15,3 +15,6 @@ app = FastAPI(lifespan=lifespan)
 
 app.include_router(post_router, prefix="/posts")
 app.include_router(user_router, prefix="/users")
+
+import os
+print(os.listdir(model_save_path))
