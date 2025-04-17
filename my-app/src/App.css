@@ -1,0 +1,100 @@
+/* Genel Stil */
+.main-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Sol ve Sağ Bölümler */
+.left-div, .right-div {
+    width: 48%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Butonlar ve Giriş Alanları */
+.button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.action-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.action-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    background-color: #007BFF;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: 0.3s;
+    text-align: center;
+}
+
+.action-btn:hover {
+    background-color: #0056b3;
+}
+
+input, textarea {
+    flex: 2;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+}
+
+textarea {
+    resize: vertical;
+    height: 60px;
+}
+
+/* Kullanıcı ve Post Listesi */
+.user-list, .post-list {
+    width: 100%;
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 5px;
+    min-height: 100px;
+    overflow-y: auto;
+}
+
+.user-list h3, .post-list h3 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    text-align: center;
+}
+
+.user-list ul, .post-list ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.user-list li, .post-list li {
+    padding: 5px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Kullanıcı ve Post Detay Alanları */
+.user-details, .post-details {
+    width: 100%;
+    padding: 10px;
+    background: #f1f1f1;
+    border-radius: 5px;
+    text-align: center;
+}
